@@ -1,30 +1,70 @@
-// index.js
-// where your node app starts
-
-// init project
 require('dotenv').config();
-var express = require('express');
-var app = express();
+const express = require('express');
+const cors = require('cors');
+const bodyParser = require('body-parser');
+const dns = require('dns');
+const app = express();
 
-// enable CORS (https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
-// so that your API is remotely testable by FCC
-var cors = require('cors');
-app.use(cors({ optionsSuccessStatus: 200 })); // some legacy browsers choke on 204
+// Basic Configuration
+const port = process.env.PORT || 3000;
 
-// http://expressjs.com/en/starter/static-files.html
-app.use(express.static('public'));
+// Enable CORS
+app.use(cors());
 
-// http://expressjs.com/en/starter/basic-routing.html
-app.get('/', function (req, res) {
-  res.sendFile(__dirname + '/views/index.html');
+// Body parser middleware to handle POST requests
+app.use(bodyParser.urlencoded({ extended: false }));
+
+// Serve static files from 'public' directory
+app.use('/public', express.static(`${process.cwd()}/public`));
+
+// In-memory store for URLs
+const urlDatabase = {};
+let urlCounter = 1;
+
+// Serve the main HTML file
+app.get('/', function(req, res) {
+  res.sendFile(process.cwd() + '/views/index.html');
 });
 
-// your first API endpoint...
-app.get('/api/hello', function (req, res) {
+// Your first API endpoint
+app.get('/api/hello', function(req, res) {
   res.json({ greeting: 'hello API' });
 });
 
-// listen for requests :)
-var listener = app.listen(process.env.PORT || 3000, function () {
-  console.log('Your app is listening on port ' + listener.address().port);
+// POST endpoint to create a short URL
+app.post('/api/shorturl', (req, res) => {
+  const originalUrl = req.body.url;
+  const urlRegex = /^https?:\/\/(www\.)?/i;
+  const hostname = originalUrl.replace(urlRegex, "").split("/")[0];
+
+  dns.lookup(hostname, (err) => {
+    if (err) {
+      return res.json({ error: 'invalid url' });
+    }
+
+    const shortUrl = urlCounter++;
+    urlDatabase[shortUrl] = originalUrl;
+
+    res.json({
+      original_url: originalUrl,
+      short_url: shortUrl
+    });
+  });
+});
+
+// GET endpoint to redirect to the original URL
+app.get('/api/shorturl/:shorturl', (req, res) => {
+  const shortUrl = req.params.shorturl;
+  const originalUrl = urlDatabase[shortUrl];
+
+  if (!originalUrl) {
+    return res.json({ error: 'No short URL found for the given input' });
+  }
+
+  res.redirect(originalUrl);
+});
+
+// Start the server
+app.listen(port, function() {
+  console.log(`Listening on port ${port}`);
 });

@@ -1,3 +1,13 @@
-# Request Header Parser Microservice
+# FreeCodeCamp Back End Development and APIs Certification  
 
-This is the boilerplate for the Request Header Parser Microservice project. Instructions for building your project can be found at https://www.freecodecamp.org/learn/apis-and-microservices/apis-and-microservices-projects/request-header-parser-microservice
+<p align="center">
+  <img src="https://i.ibb.co/7tWc9RYJ/quality-certif.png" alt="FreeCodeCamp Back End Development and APIs Certification" width="500">
+</p>  
+
+This repository showcases my **FreeCodeCamp Back End Development and APIs Certification** projects.  
+
+🎓 **Certified by FreeCodeCamp** – [View certification](https://www.freecodecamp.org/certification/yassinehouta/quality-assurance-v7)  
+
+---  
+
+🚀 Built with passion by [Yassine](https://github.com/yassinht)  
